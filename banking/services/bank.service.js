@@ -21,40 +21,57 @@ const authenticateUser = (uname,pwd) => {
     }
   }
 
-  function deposit(username, password, amount) {
-    let user = authenticateUser(username, password);
-    if (user == 1) {
+  function deposit(username,amount) {
+//     let user = authenticateUser(username, password);
+//     if (user == 1) {
         accountDetails[username].balance += amount;
         accountDetails[username].history.push({
             amount: amount,
-            typeOfTransaction: "credit"
+            typeofTransaction: "credit"
         });
-        return "your account has been credited with" + amount+"new balance"+accountDetails[username].balance;
-    } else {
-        return "invalid details";
+        return {
+            balance:accountDetails[username].balance,
+            message:"your account has been credited with" + amount+"new balance"+accountDetails[username].balance
+        };
     }
-}
+            //     else {
+    //     return "invalid details";
+    // }
 
-    function withdrew(username, password, amount){
-        let user = authenticateUser(username, password);
-        if (user == 1) {
+
+    function withdraw(username, amount){
+        // let user = authenticateUser(username, password);
+        // if (user == 1) {
             console.log(accountDetails[username].balance)
                 if(accountDetails[username].balance<amount){
-                    return "Insuffitient balance";
+                    return {message:"Insuffitient balance"};
                 }
             accountDetails[username].balance -= amount;
             accountDetails[username].history.push({
                 amount: amount,
-                typeOfTransaction: "debit"
+                typeofTransaction: "debit"
             });
-            return "your account has been debited with" + amount+"new balance"+accountDetails[username].balance;
-        } else {
-            return "invalid details";
-        }
+            return {
+                balance:accountDetails[username].balance,
+                message:"your account has been debited with" + amount+"new balance"+accountDetails[username].balance
+            };
+        // } else {
+        //     return "invalid details";
+        // }
+    }
+    const history= (username)=>{
+        // let user= authenticateUser(username,password);
+        // if(user == 1){
+            return accountDetails[username].history
+        // }else{
+        //     return [];
+        // }
+
     }
   
   module.exports={
       authenticateUser,
       deposit,
-      withdrew
+      withdraw,
+      history
   }
