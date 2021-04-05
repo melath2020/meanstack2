@@ -17,19 +17,28 @@ const authMiddleware = (req,res,next)=>{
 }
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  console.log(req.query.username)
-  res.render('index', { title: 'Hello world' });
+router.get('/', function(req, res,) {
+  // const user= new User({
+  //   acno: 11111,
+  //   name: "achu", 
+  //   balance: 20012, 
+  //   username: "userone",
+  //   password: "userone",
+  //   history:[
+  //   ] 
+  // })
+  // user.save();
 });
 
 
-router.post('/login', function(req, res,) {
-  const result = bankService.authenticateUser(req.body.username, req.body.password);
-  if(result==1){
+router.post('/login', function(req, res) {
+ bankService.authenticateUser(req.body.username, req.body.password)
+ .then(user=>{
+  if(user){
     const token=jwt.sign({
       exp: Math.floor(Date.now()/1000)+(60*60*5),
       username:req.body.username
-    }, jwtSecret)
+    }, jwtSecret);
     res.send({
       message:"logged in succesfully",
       token:token
@@ -39,23 +48,38 @@ router.post('/login', function(req, res,) {
       message:"invalid credentials"
   });
 }
-});
-  router.post('/deposit',authMiddleware,function(req, res,){
-    const message = bankService.deposit(req.user.username, req.body.amount);
-    res.send(message);
 
+
+ });
+ 
+  });
+  
+
+  router.post('/deposit',authMiddleware,function(req, res,){
+     bankService.deposit(req.user.username, req.body.amount)
+    .then(message=>{
+      res.send(message);
+    });
   })
   
   router.post('/withdraw',authMiddleware,function(req, res,){
-    const message = bankService.withdraw(req.user.username,req.body.amount);
-    res.send(message);
-
+    bankService.withdraw(req.user.username,req.body.amount)
+    .then(message=>{
+      res.send(message);
+    });
   })
   router.get('/history',authMiddleware,function(req, res,){
-    const message = bankService.history(req.user.username);
-    res.send(message);
-
-  })
+    bankService.getUser(req.user.username)
+    .then(user=>{
+      res.send(user.history);
+  });
+})
+  router.get('/profile',authMiddleware,function(req, res,){
+    bankService.getUser(req.user.username)
+    .then(user=>{
+      res.send(user);
+  });
+})
   // res.render('index', { title: 'Hello world' });
 
 module.exports = router;
